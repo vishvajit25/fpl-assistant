@@ -8,8 +8,8 @@ value for money.
 ## Run it
 
 All files live in one flat folder (no subfolders) so it's easy to upload
-manually to GitHub — `main.py`, `model.py`, `optimizer.py`, `fpl_client.py`
-are the backend; `index.html` is the whole frontend.
+manually to GitHub — `main.py`, `model.py`, `optimizer.py`, `fpl_client.py`,
+`chips.py` are the backend; `index.html` is the whole frontend.
 
 ```bash
 python3 -m venv .venv
@@ -31,11 +31,17 @@ Then open `index.html` in a browser (or serve it with
 - **Suggested Squad** — builds a valid 15-man squad (2/5/5/3, configurable
   budget, max 3 per club), rendered as a real pitch formation with a
   starting XI + captain/vice-captain, plus the bench.
-- **My Team** — paste your FPL team ID to see your current squad ranked by
-  the model, plus transfer suggestions.
-- **News & Opinion** — live discussion threads from r/FantasyPL (free, no
-  API key), for injury chat, captaincy polls, and community opinion
-  alongside the model's own numbers.
+- **My Team** — paste your FPL team ID to see your squad as a pitch
+  formation + bench, transfer suggestions, your last 6 gameweeks' points
+  and rank trend, and rule-of-thumb **chip advice** (Wildcard, Free Hit,
+  Bench Boost, Triple Captain) based on your squad's availability and
+  upcoming fixtures.
+- **News & Opinion** — live posts pooled from r/FantasyPL and Fantasy
+  Football Scout's RSS feed (both free, no API key), for injury chat,
+  captaincy polls, and editorial opinion alongside the model's own numbers.
+- **Day/night theme toggle** — a floodlit-stadium dark theme and a sunny
+  blue-sky light theme, both built from a green pitch backdrop; your choice
+  is remembered locally.
 
 ## Model (v2)
 

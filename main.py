@@ -5,6 +5,7 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+import chips
 import fpl_client
 from model import score_players
 from optimizer import build_squad
@@ -166,6 +167,25 @@ async def my_team(team_id: int):
 
     my_players.sort(key=lambda p: p["score"], reverse=True)
 
+    try:
+        history = await fpl_client.get_entry_history(team_id)
+    except Exception:
+        history = {"current": [], "chips": []}
+
+    recent_gameweeks = [
+        {
+            "event": h["event"],
+            "points": h.get("points"),
+            "points_on_bench": h.get("points_on_bench"),
+            "overall_rank": h.get("overall_rank"),
+            "transfers": h.get("event_transfers"),
+            "transfer_cost": h.get("event_transfers_cost"),
+            "team_value": round((h.get("value") or 0) / 10.0, 1),
+        }
+        for h in history.get("current", [])[-6:]
+    ]
+    chip_suggestions = chips.suggest_chips(my_players, history.get("chips", []), _current_event(bootstrap))
+
     # Transfer suggestions: for each of the manager's weakest players, find a
     # same-position replacement (not already owned) with a notably higher
     # score that fits within a reasonable price step-up.
@@ -198,4 +218,6 @@ async def my_team(team_id: int):
         "gameweek_used": event,
         "squad": my_players,
         "transfer_suggestions": suggestions,
+        "recent_gameweeks": recent_gameweeks,
+        "chip_suggestions": chip_suggestions,
     }

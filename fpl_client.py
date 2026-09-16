@@ -76,6 +76,12 @@ async def get_entry_picks(team_id: int, event: int) -> dict:
     return await _get_json(f"{BASE_URL}/entry/{team_id}/event/{event}/picks/")
 
 
+async def get_entry_history(team_id: int) -> dict:
+    """A manager's season history: points per gameweek plus chips used —
+    used for the "previous gameweek performance" and chip-advice views."""
+    return await _get_json(f"{BASE_URL}/entry/{team_id}/history/")
+
+
 async def get_community_news(limit: int = 20) -> list[dict]:
     """Hot discussion threads from r/FantasyPL — free, no API key, used as a
     lightweight "news & opinions" feed. Reddit requires a descriptive,

@@ -5,42 +5,88 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FPL Assistant</title>
 <style>
-  :root {
+  :root, :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg: #0b0d12;
     --bg-elev: #14161e;
-    --card: #171a24;
-    --card-2: #1d2130;
-    --border: #262a38;
+    --card: #171a24cc;
+    --card-2: #1d2130cc;
+    --panel-bg: rgba(8,10,14,0.66);
+    --border: #262a3888;
+    --row-hover: #232838;
     --text: #eef0f5;
-    --muted: #8b8fa3;
+    --muted: #a7abbd;
     --accent: #6d5bf5;
     --accent-2: #8f7dff;
     --good: #46d19e;
     --warn: #f5b942;
-    --bad: #ff6b6b;
+    --bad: #ff7a7a;
     --gkp: #f0c95e;
     --def: #6ec1ff;
     --mid: #7ee38a;
     --fwd: #ff8e7a;
+    --cap-bg: #f0c95e;
+    --vc-bg: #6ec1ff;
     --radius: 12px;
-    --shadow: 0 8px 24px rgba(0,0,0,0.35);
+    --shadow: 0 8px 24px rgba(0,0,0,0.4);
+    /* Stadium under floodlights: warm corner glows over a mown, vivid-green pitch. */
+    --scene:
+      radial-gradient(560px 460px at 0% 0%, rgba(255,244,214,0.30), transparent 62%),
+      radial-gradient(560px 460px at 100% 0%, rgba(255,244,214,0.28), transparent 62%),
+      radial-gradient(620px 500px at 0% 100%, rgba(255,244,214,0.22), transparent 60%),
+      radial-gradient(620px 500px at 100% 100%, rgba(255,244,214,0.22), transparent 60%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 46px, rgba(0,0,0,0.10) 46px, rgba(0,0,0,0.10) 92px),
+      linear-gradient(180deg, #04120c 0%, #0a3320 16%, #146b39 42%, #1c9148 62%, #147a3d 82%, #0d5a2e 100%);
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg-elev: #eef2f9;
+    --card: #ffffffdd;
+    --card-2: #f2f5fadd;
+    --panel-bg: rgba(255,255,255,0.62);
+    --border: #d7dce6a0;
+    --row-hover: #e8edf7;
+    --text: #171a24;
+    --muted: #545a6e;
+    --accent: #5a3ff0;
+    --accent-2: #4630c9;
+    --good: #1f9d5c;
+    --warn: #a86a00;
+    --bad: #d93636;
+    --gkp: #9a6b00;
+    --def: #0d6cc4;
+    --mid: #1f9d4d;
+    --fwd: #d9480f;
+    --cap-bg: #ffcf40;
+    --vc-bg: #4da3ff;
+    --radius: 12px;
+    --shadow: 0 8px 24px rgba(20,30,60,0.14);
+    /* Sunny matchday: blue sky, soft clouds, sunlit green pitch below the horizon. */
+    --scene:
+      radial-gradient(90px 40px at 18% 13%, rgba(255,255,255,0.95), transparent 72%),
+      radial-gradient(130px 50px at 55% 9%, rgba(255,255,255,0.9), transparent 72%),
+      radial-gradient(80px 34px at 78% 17%, rgba(255,255,255,0.85), transparent 72%),
+      radial-gradient(520px 420px at 88% 6%, rgba(255,252,235,0.95), rgba(255,244,200,0.4) 45%, transparent 70%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.10) 0, rgba(255,255,255,0.10) 46px, rgba(0,0,0,0.05) 46px, rgba(0,0,0,0.05) 92px),
+      linear-gradient(180deg, #7ec3f5 0%, #aedaff 20%, #d8f1e4 34%, #8fd68f 52%, #52b556 72%, #3f9e46 100%);
   }
   * { box-sizing: border-box; }
-  html { background: #081008; }
+  html {
+    min-height: 100%;
+    background: var(--scene);
+    background-attachment: fixed;
+    background-size: cover;
+  }
   body {
     font-family: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
-    max-width: 1180px; margin: 0 auto; padding: 20px 16px 60px;
+    max-width: 1180px; margin: 18px auto 40px; padding: 20px 16px 60px;
     color: var(--text); -webkit-font-smoothing: antialiased;
-    /* Floodlit football ground: faint mown-grass stripes + corner vignette
-       under the app's dark base, subtle enough that cards stay readable. */
-    background:
-      repeating-linear-gradient(100deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 60px, transparent 60px, transparent 120px),
-      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(70,209,158,0.10), transparent 60%),
-      radial-gradient(ellipse 900px 500px at 100% 0%, rgba(109,91,245,0.10), transparent 55%),
-      linear-gradient(180deg, #0b0d12 0%, #0a1410 45%, #0b0d12 100%);
-    background-attachment: fixed;
-    min-height: 100vh;
+    background: var(--panel-bg);
+    backdrop-filter: blur(14px) saturate(1.15);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    border-radius: 24px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+    min-height: calc(100vh - 36px);
+    transition: background .2s ease, color .2s ease;
   }
   a { color: var(--accent-2); }
 
@@ -60,6 +106,14 @@
     padding: 6px 14px; font-size: 0.78rem; color: var(--muted); white-space: nowrap;
   }
   .gw-badge b { color: var(--text); }
+  .theme-toggle {
+    background: var(--card-2); border: 1px solid var(--border); color: var(--text);
+    width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    transition: transform .15s ease;
+  }
+  .theme-toggle:hover { transform: scale(1.08); }
+  .header-right { display: flex; align-items: center; gap: 10px; }
 
   nav.tabs {
     display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap;
@@ -115,7 +169,7 @@
   thead th:hover { color: var(--text); }
   thead th.sorted { color: var(--accent-2); }
   tbody tr { background: var(--card-2); transition: background .12s ease; }
-  tbody tr:hover { background: #232838; }
+  tbody tr:hover { background: var(--row-hover); }
   td { padding: 9px 10px; white-space: nowrap; }
   td.name-cell { white-space: normal; }
   tr td:first-child { border-radius: 8px 0 0 8px; }
@@ -135,8 +189,8 @@
   .player-cell { display: flex; align-items: center; gap: 10px; }
 
   .badge { border-radius: 5px; padding: 1px 6px; font-size: 0.68rem; margin-left: 5px; font-weight: 600; display: inline-block; }
-  .cap-badge { background: var(--gkp); color: #14151a; }
-  .vc-badge { background: var(--def); color: #14151a; }
+  .cap-badge { background: var(--cap-bg); color: #14151a; }
+  .vc-badge { background: var(--vc-bg); color: #14151a; }
   .status-badge { background: #ff6b6b33; color: var(--bad); }
   .sp-badge { background: #7ee38a33; color: var(--mid); }
   .diff-badge { background: #8f7dff33; color: var(--accent-2); }
@@ -179,6 +233,28 @@
   .bench-strip { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
   .bench-strip .p-card { background: var(--card-2); border-color: var(--border); }
   .bench-strip .p-card .pname { color: var(--text); }
+
+  /* Gameweek history strip */
+  .gw-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+  .gw-pill { background: var(--card-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; text-align: center; min-width: 72px; }
+  .gw-pill .gwn { font-size: 0.66rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .gw-pill .gwpts { font-size: 1.15rem; font-weight: 800; color: var(--accent-2); margin-top: 2px; }
+  .gw-pill .gwsub { font-size: 0.68rem; color: var(--muted); margin-top: 3px; white-space: nowrap; }
+
+  /* Chip advice */
+  .chip-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 11px 14px; border-radius: 10px; background: var(--card-2);
+    border: 1px solid var(--border); margin-bottom: 8px;
+  }
+  .chip-row.recommended { border-color: var(--good); }
+  .chip-row .chip-left { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .chip-row .chip-name { font-weight: 700; }
+  .chip-row .chip-reason { color: var(--muted); font-size: 0.78rem; }
+  .chip-status { font-size: 0.66rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+  .chip-status.recommended { background: var(--good); color: #06130c; }
+  .chip-status.available { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .chip-status.used { background: transparent; border: 1px solid var(--border); color: var(--muted); opacity: 0.7; }
 
   /* News tab */
   .news-item {
@@ -226,7 +302,10 @@
         <div class="sub">Score = form + fixtures + underlying stats + value + availability, from the live FPL API.</div>
       </div>
     </div>
-    <div class="gw-badge" id="gwBadge">Loading gameweek…</div>
+    <div class="header-right">
+      <div class="gw-badge" id="gwBadge">Loading gameweek…</div>
+      <button class="theme-toggle" id="themeToggle" title="Switch between night-match and sunny-match themes" aria-label="Toggle light/dark theme">🌙</button>
+    </div>
   </header>
 
   <nav class="tabs">
@@ -293,6 +372,21 @@
 const API = (location.hostname === "127.0.0.1" || location.hostname === "localhost")
   ? "http://127.0.0.1:8000"
   : "https://fpl-assistant-backend-pser.onrender.com";
+
+const THEME_KEY = "fpl-assistant-theme";
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  const btn = document.getElementById("themeToggle");
+  if (btn) btn.textContent = theme === "light" ? "☀️" : "🌙";
+}
+let storedTheme = "dark";
+try { storedTheme = localStorage.getItem(THEME_KEY) || "dark"; } catch (e) { /* private mode / blocked storage */ }
+applyTheme(storedTheme);
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+  applyTheme(next);
+  try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
+});
 
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -474,6 +568,43 @@ async function loadSquad() {
   }
 }
 
+function renderGwHistory(recentGameweeks) {
+  if (!recentGameweeks || !recentGameweeks.length) {
+    return '<div class="muted">No gameweek history yet this season.</div>';
+  }
+  return `<div class="gw-strip">${recentGameweeks.map((h, i) => {
+    const prevRank = i > 0 ? recentGameweeks[i - 1].overall_rank : null;
+    let rankArrow = "";
+    if (prevRank != null && h.overall_rank != null) {
+      rankArrow = h.overall_rank < prevRank ? ' <span class="price-up">▲</span>' : h.overall_rank > prevRank ? ' <span class="price-down">▼</span>' : "";
+    }
+    const benchNote = h.points_on_bench ? `${h.points_on_bench} bench` : "";
+    const transferNote = h.transfer_cost ? `-${h.transfer_cost}pts hit` : "";
+    const sub = [benchNote, transferNote].filter(Boolean).join(" · ");
+    return `<div class="gw-pill">
+      <div class="gwn">GW${h.event}</div>
+      <div class="gwpts">${h.points ?? "-"}</div>
+      <div class="gwsub">Rank ${h.overall_rank != null ? h.overall_rank.toLocaleString() : "n/a"}${rankArrow}</div>
+      ${sub ? `<div class="gwsub">${esc(sub)}</div>` : ""}
+    </div>`;
+  }).join("")}</div>`;
+}
+
+function renderChipAdvice(chipSuggestions) {
+  if (!chipSuggestions || !chipSuggestions.length) return '<div class="muted">No chip data available.</div>';
+  return chipSuggestions.map(c => {
+    const statusClass = c.recommended ? "recommended" : c.available ? "available" : "used";
+    const statusLabel = c.recommended ? "Recommended" : c.available ? "Available" : "Used";
+    return `<div class="chip-row ${c.recommended ? "recommended" : ""}">
+      <div class="chip-left">
+        <div class="chip-name">${esc(c.chip)}</div>
+        <div class="chip-reason">${esc(c.reason)}</div>
+      </div>
+      <span class="chip-status ${statusClass}">${statusLabel}</span>
+    </div>`;
+  }).join("");
+}
+
 async function loadMyTeam() {
   const out = document.getElementById("myteamOut");
   const teamId = document.getElementById("teamId").value;
@@ -499,6 +630,8 @@ async function loadMyTeam() {
         <h3 style="margin-top:18px;">Bench</h3>
         <div class="bench-strip">${bench.map(p => pitchCard(p)).join("")}</div>
       </div>
+      <div class="card"><h3>Recent Gameweek Performance</h3>${renderGwHistory(data.recent_gameweeks)}</div>
+      <div class="card"><h3>Chip Advice</h3>${renderChipAdvice(data.chip_suggestions)}</div>
       <div class="card"><h3>Your Squad (by model score)</h3><div class="table-scroll"><table>${tableHead()}${data.squad.map(p => playerRow(p, badgeByFlags(p))).join("")}${tableFoot()}</table></div></div>
       <div class="card"><h3>Suggested Transfers</h3><div class="grid">${suggestions}</div></div>
     `;
