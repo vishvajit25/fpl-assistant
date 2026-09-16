@@ -40,8 +40,11 @@ Then open `index.html` in a browser (or serve it with
   Football Scout's RSS feed (both free, no API key), for injury chat,
   captaincy polls, and editorial opinion alongside the model's own numbers.
 - **Day/night theme toggle** — a floodlit-stadium dark theme and a sunny
-  blue-sky light theme, both built from a green pitch backdrop; your choice
-  is remembered locally.
+  light theme, both built from a shared aerial mown-pitch backdrop (drawn as
+  inline SVG line art, not a photo) with goalposts framing the sides of the
+  screen on wide displays; your choice is remembered locally.
+- **Forum** — a tab that jumps straight to YouTube search results for the
+  upcoming gameweek's FPL tips, in a new tab.
 
 ## Model (v2)
 

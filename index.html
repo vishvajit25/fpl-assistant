@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FPL Assistant</title>
 <style>
+  :root {
+    /* Aerial mown-stripe pitch with painted line markings, drawn as an
+       inline SVG (own artwork, not a photo) — shared by both themes as the
+       base background layer. */
+    --pitch-bg: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj4KICA8ZGVmcz4KICAgIDxwYXR0ZXJuIGlkPSJzdHJpcGVzIiB3aWR0aD0iODIiIGhlaWdodD0iNTIwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSI0MCIgeT0iNDAiPgogICAgICA8cmVjdCB3aWR0aD0iODIiIGhlaWdodD0iNTIwIiBmaWxsPSIjMWY4YTQ1Ii8+CiAgICAgIDxyZWN0IHdpZHRoPSI0MSIgaGVpZ2h0PSI1MjAiIGZpbGw9IiMyNmEwNTIiLz4KICAgIDwvcGF0dGVybj4KICA8L2RlZnM+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNiNTUzM2YiLz4KICA8cmVjdCB4PSI0MCIgeT0iNDAiIHdpZHRoPSI4MjAiIGhlaWdodD0iNTIwIiBmaWxsPSJ1cmwoI3N0cmlwZXMpIiBzdHJva2U9IiNmNWY3ZmEiIHN0cm9rZS13aWR0aD0iNCIvPgogIDxsaW5lIHgxPSI0NTAiIHkxPSI0MCIgeDI9IjQ1MCIgeTI9IjU2MCIgc3Ryb2tlPSIjZjVmN2ZhIiBzdHJva2Utd2lkdGg9IjQiLz4KICA8Y2lyY2xlIGN4PSI0NTAiIGN5PSIzMDAiIHI9IjcwIiBzdHJva2U9IiNmNWY3ZmEiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPgogIDxjaXJjbGUgY3g9IjQ1MCIgY3k9IjMwMCIgcj0iNCIgZmlsbD0iI2Y1ZjdmYSIvPgogIDxyZWN0IHg9IjQwIiB5PSIxNTAiIHdpZHRoPSIxNDAiIGhlaWdodD0iMzAwIiBzdHJva2U9IiNmNWY3ZmEiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPgogIDxyZWN0IHg9IjQwIiB5PSIyMjAiIHdpZHRoPSI1MCIgaGVpZ2h0PSIxNjAiIHN0cm9rZT0iI2Y1ZjdmYSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+CiAgPGNpcmNsZSBjeD0iMTUwIiBjeT0iMzAwIiByPSI0IiBmaWxsPSIjZjVmN2ZhIi8+CiAgPHBhdGggZD0iTTE4MCwyMzcgQTcwLDcwIDAgMCAxIDE4MCwzNjMiIHN0cm9rZT0iI2Y1ZjdmYSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+CiAgPHJlY3QgeD0iNzIwIiB5PSIxNTAiIHdpZHRoPSIxNDAiIGhlaWdodD0iMzAwIiBzdHJva2U9IiNmNWY3ZmEiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPgogIDxyZWN0IHg9IjgxMCIgeT0iMjIwIiB3aWR0aD0iNTAiIGhlaWdodD0iMTYwIiBzdHJva2U9IiNmNWY3ZmEiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPgogIDxjaXJjbGUgY3g9Ijc1MCIgY3k9IjMwMCIgcj0iNCIgZmlsbD0iI2Y1ZjdmYSIvPgogIDxwYXRoIGQ9Ik03MjAsMzYzIEE3MCw3MCAwIDAgMSA3MjAsMjM3IiBzdHJva2U9IiNmNWY3ZmEiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPgogIDxwYXRoIGQ9Ik00MCw1MiBBMTIsMTIgMCAwIDEgNTIsNDAiIHN0cm9rZT0iI2Y1ZjdmYSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+CiAgPHBhdGggZD0iTTg0OCw0MCBBMTIsMTIgMCAwIDEgODYwLDUyIiBzdHJva2U9IiNmNWY3ZmEiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPgogIDxwYXRoIGQ9Ik01Miw1NjAgQTEyLDEyIDAgMCAxIDQwLDU0OCIgc3Ryb2tlPSIjZjVmN2ZhIiBzdHJva2Utd2lkdGg9IjQiIGZpbGw9Im5vbmUiLz4KICA8cGF0aCBkPSJNODYwLDU0OCBBMTIsMTIgMCAwIDEgODQ4LDU2MCIgc3Ryb2tlPSIjZjVmN2ZhIiBzdHJva2Utd2lkdGg9IjQiIGZpbGw9Im5vbmUiLz4KPC9zdmc+Cg==");
+  }
   :root, :root[data-theme="dark"] {
     color-scheme: dark;
     --bg-elev: #14161e;
@@ -28,14 +34,15 @@
     --vc-bg: #6ec1ff;
     --radius: 12px;
     --shadow: 0 8px 24px rgba(0,0,0,0.4);
-    /* Stadium under floodlights: warm corner glows over a mown, vivid-green pitch. */
-    --scene:
-      radial-gradient(560px 460px at 0% 0%, rgba(255,244,214,0.30), transparent 62%),
-      radial-gradient(560px 460px at 100% 0%, rgba(255,244,214,0.28), transparent 62%),
-      radial-gradient(620px 500px at 0% 100%, rgba(255,244,214,0.22), transparent 60%),
-      radial-gradient(620px 500px at 100% 100%, rgba(255,244,214,0.22), transparent 60%),
-      repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 46px, rgba(0,0,0,0.10) 46px, rgba(0,0,0,0.10) 92px),
-      linear-gradient(180deg, #04120c 0%, #0a3320 16%, #146b39 42%, #1c9148 62%, #147a3d 82%, #0d5a2e 100%);
+    --scene-base: #0d5a2e;
+    /* Stadium under floodlights: warm corner glows plus a darkening vignette
+       over the shared aerial pitch, so it reads as night-match lighting. */
+    --scene-glow:
+      radial-gradient(560px 460px at 0% 0%, rgba(255,244,214,0.35), transparent 62%),
+      radial-gradient(560px 460px at 100% 0%, rgba(255,244,214,0.32), transparent 62%),
+      radial-gradient(620px 500px at 0% 100%, rgba(255,244,214,0.26), transparent 60%),
+      radial-gradient(620px 500px at 100% 100%, rgba(255,244,214,0.26), transparent 60%),
+      radial-gradient(ellipse 1400px 900px at 50% 45%, transparent 40%, rgba(2,10,6,0.55) 100%);
   }
   :root[data-theme="light"] {
     color-scheme: light;
@@ -60,21 +67,26 @@
     --vc-bg: #4da3ff;
     --radius: 12px;
     --shadow: 0 8px 24px rgba(20,30,60,0.14);
-    /* Sunny matchday: blue sky, soft clouds, sunlit green pitch below the horizon. */
-    --scene:
-      radial-gradient(90px 40px at 18% 13%, rgba(255,255,255,0.95), transparent 72%),
-      radial-gradient(130px 50px at 55% 9%, rgba(255,255,255,0.9), transparent 72%),
-      radial-gradient(80px 34px at 78% 17%, rgba(255,255,255,0.85), transparent 72%),
-      radial-gradient(520px 420px at 88% 6%, rgba(255,252,235,0.95), rgba(255,244,200,0.4) 45%, transparent 70%),
-      repeating-linear-gradient(115deg, rgba(255,255,255,0.10) 0, rgba(255,255,255,0.10) 46px, rgba(0,0,0,0.05) 46px, rgba(0,0,0,0.05) 92px),
-      linear-gradient(180deg, #7ec3f5 0%, #aedaff 20%, #d8f1e4 34%, #8fd68f 52%, #52b556 72%, #3f9e46 100%);
+    --scene-base: #3f9e46;
+    /* Sunny matchday: soft cloud highlights and a warm sun glow over the
+       same aerial pitch, no separate sky band needed since the photo
+       reference this mimics is itself a straight-down pitch shot. */
+    --scene-glow:
+      radial-gradient(110px 46px at 14% 10%, rgba(255,255,255,0.8), transparent 72%),
+      radial-gradient(150px 56px at 50% 6%, rgba(255,255,255,0.7), transparent 72%),
+      radial-gradient(90px 38px at 82% 12%, rgba(255,255,255,0.65), transparent 72%),
+      radial-gradient(650px 520px at 90% 4%, rgba(255,252,235,0.55), rgba(255,244,200,0.18) 45%, transparent 70%),
+      radial-gradient(ellipse 1400px 900px at 50% 50%, transparent 45%, rgba(255,255,255,0.12) 100%);
   }
   * { box-sizing: border-box; }
   html {
     min-height: 100%;
-    background: var(--scene);
-    background-attachment: fixed;
-    background-size: cover;
+    background-image: var(--scene-glow), var(--pitch-bg);
+    background-repeat: no-repeat, no-repeat;
+    background-position: center, center;
+    background-size: cover, cover;
+    background-attachment: fixed, fixed;
+    background-color: var(--scene-base);
   }
   body {
     font-family: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -271,6 +283,21 @@
   footer { margin-top: 40px; color: var(--muted); font-size: 0.76rem; text-align: center; border-top: 1px solid var(--border); padding-top: 16px; }
   footer a { color: var(--muted); }
 
+  /* Decorative goalposts standing at each end of the pitch, in the margins
+     either side of the content panel. Fixed + negative z-index so they sit
+     behind the panel and only show where the html background peeks through. */
+  .goalpost {
+    display: none; position: fixed; bottom: 0; width: 170px; height: 58vh;
+    z-index: -1; pointer-events: none; opacity: 0.5;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+  }
+  .goalpost.left { left: 0; }
+  .goalpost.right { right: 0; transform: scaleX(-1); }
+  .goalpost svg { width: 100%; height: 100%; display: block; }
+  @media (min-width: 1500px) {
+    .goalpost { display: block; }
+  }
+
   @media (max-width: 640px) {
     h1 { font-size: 1.15rem; }
     .p-card { width: 76px; padding: 6px 6px 5px; }
@@ -280,6 +307,34 @@
 </style>
 </head>
 <body>
+  <div class="goalpost left" aria-hidden="true">
+    <svg viewBox="0 0 160 400" preserveAspectRatio="xMinYMax meet">
+      <defs>
+        <pattern id="netLines" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="16" stroke="#ffffff" stroke-width="1"/>
+          <line x1="0" y1="0" x2="16" y2="0" stroke="#ffffff" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <polygon points="18,36 118,78 118,352 18,382" fill="url(#netLines)" opacity="0.4"/>
+      <line x1="18" y1="36" x2="118" y2="78" stroke="#f4f6fa" stroke-width="9" stroke-linecap="round"/>
+      <rect x="12" y="30" width="12" height="356" rx="3" fill="#f4f6fa"/>
+      <rect x="112" y="72" width="9" height="282" rx="3" fill="#f4f6fa" opacity="0.85"/>
+    </svg>
+  </div>
+  <div class="goalpost right" aria-hidden="true">
+    <svg viewBox="0 0 160 400" preserveAspectRatio="xMinYMax meet">
+      <defs>
+        <pattern id="netLines2" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="16" stroke="#ffffff" stroke-width="1"/>
+          <line x1="0" y1="0" x2="16" y2="0" stroke="#ffffff" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <polygon points="18,36 118,78 118,352 18,382" fill="url(#netLines2)" opacity="0.4"/>
+      <line x1="18" y1="36" x2="118" y2="78" stroke="#f4f6fa" stroke-width="9" stroke-linecap="round"/>
+      <rect x="12" y="30" width="12" height="356" rx="3" fill="#f4f6fa"/>
+      <rect x="112" y="72" width="9" height="282" rx="3" fill="#f4f6fa" opacity="0.85"/>
+    </svg>
+  </div>
   <header class="hero">
     <div class="brand">
       <svg class="logo" viewBox="0 0 64 64" role="img" aria-label="FPL Assistant crest">
@@ -313,6 +368,7 @@
     <button class="tab-btn" data-tab="squad">Suggested Squad</button>
     <button class="tab-btn" data-tab="myteam">My Team</button>
     <button class="tab-btn" data-tab="news">News &amp; Opinion</button>
+    <button class="tab-btn" id="forumTab" title="Opens FPL gameweek tips on YouTube in a new tab">Forum ↗</button>
   </nav>
 
   <div id="rankings" class="panel active">
@@ -388,14 +444,24 @@ document.getElementById("themeToggle").addEventListener("click", () => {
   try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
 });
 
-document.querySelectorAll(".tab-btn").forEach(btn => {
+document.querySelectorAll(".tab-btn[data-tab]").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-btn[data-tab]").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
     btn.classList.add("active");
     document.getElementById(btn.dataset.tab).classList.add("active");
     if (btn.dataset.tab === "news" && !newsLoaded) loadNews();
   });
+});
+
+// "Forum" isn't an in-app tab — it jumps straight to YouTube search results
+// for the upcoming gameweek's FPL tips, in a new tab, leaving the current
+// panel untouched.
+let currentGameweek = null;
+document.getElementById("forumTab").addEventListener("click", () => {
+  const gwLabel = currentGameweek ? `Gameweek ${currentGameweek}` : "next Gameweek";
+  const query = encodeURIComponent(`FPL ${gwLabel} tips`);
+  window.open(`https://www.youtube.com/results?search_query=${query}`, "_blank", "noopener,noreferrer");
 });
 
 const STATUS_LABEL = { a: "", d: "Doubtful", i: "Injured", s: "Suspended", u: "Unavailable", n: "Not in squad" };
@@ -473,6 +539,7 @@ document.getElementById("searchBox").addEventListener("input", () => {
 document.getElementById("maxPrice").addEventListener("change", loadRankings);
 
 function setGwBadge(gw) {
+  if (gw) currentGameweek = gw;
   document.getElementById("gwBadge").innerHTML = gw ? `Gameweek <b>${gw}</b>` : "";
 }
 
