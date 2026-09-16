@@ -1,17 +1,22 @@
 """Thin client for the official (unofficial-but-public) Fantasy Premier League
-API, plus a free community "news & opinions" feed from Reddit's public JSON
-endpoints (no API key needed for either)."""
+API, plus free community "news & opinions" feeds — Reddit's public JSON
+endpoints and Fantasy Football Scout's RSS feed (no API key needed for
+either)."""
 import time
+import xml.etree.ElementTree as ET
+from email.utils import parsedate_to_datetime
 from typing import Any, Optional
 
 import httpx
 
 BASE_URL = "https://fantasy.premierleague.com/api"
 REDDIT_BASE_URL = "https://www.reddit.com"
+FFSCOUT_RSS_URL = "https://www.fantasyfootballscout.co.uk/feed/"
 CACHE_TTL_SECONDS = 15 * 60
 NEWS_CACHE_TTL_SECONDS = 10 * 60
 
 _cache: dict[str, tuple[float, Any]] = {}
+_text_cache: dict[str, tuple[float, str]] = {}
 
 
 async def _get_json(url: str, *, ttl: float = CACHE_TTL_SECONDS, headers: Optional[dict] = None) -> Any:
@@ -27,6 +32,21 @@ async def _get_json(url: str, *, ttl: float = CACHE_TTL_SECONDS, headers: Option
 
     _cache[url] = (now, data)
     return data
+
+
+async def _get_text(url: str, *, ttl: float = CACHE_TTL_SECONDS, headers: Optional[dict] = None) -> str:
+    now = time.time()
+    cached = _text_cache.get(url)
+    if cached and now - cached[0] < ttl:
+        return cached[1]
+
+    async with httpx.AsyncClient(timeout=15) as client:
+        resp = await client.get(url, headers=headers or {"User-Agent": "fpl-assistant/0.1"})
+        resp.raise_for_status()
+        text = resp.text
+
+    _text_cache[url] = (now, text)
+    return text
 
 
 async def get_bootstrap() -> dict:
@@ -81,5 +101,43 @@ async def get_community_news(limit: int = 20) -> list[dict]:
             "num_comments": post.get("num_comments", 0),
             "created_utc": post.get("created_utc", 0),
             "flair": post.get("link_flair_text"),
+            "source": "r/FantasyPL",
+        })
+    return posts
+
+
+async def get_ffscout_news(limit: int = 10) -> list[dict]:
+    """Fantasy Football Scout's public RSS feed — free, no API key. An
+    editorial-opinion complement to the r/FantasyPL community feed (team
+    news, captaincy picks, transfer analysis). Raises on failure — callers
+    should degrade gracefully.
+    """
+    text = await _get_text(
+        FFSCOUT_RSS_URL,
+        ttl=NEWS_CACHE_TTL_SECONDS,
+        headers={"User-Agent": "fpl-assistant/0.1 (personal FPL dashboard)"},
+    )
+    root = ET.fromstring(text)
+    posts = []
+    for item in root.findall("./channel/item")[:limit]:
+        title = (item.findtext("title") or "").strip()
+        link = (item.findtext("link") or "").strip()
+        pub_date = item.findtext("pubDate")
+        created_utc = 0
+        if pub_date:
+            try:
+                created_utc = parsedate_to_datetime(pub_date).timestamp()
+            except (TypeError, ValueError):
+                created_utc = 0
+        creator = item.findtext("{http://purl.org/dc/elements/1.1/}creator") or "Fantasy Football Scout"
+        posts.append({
+            "title": title,
+            "url": link,
+            "author": creator,
+            "score": None,
+            "num_comments": None,
+            "created_utc": created_utc,
+            "flair": None,
+            "source": "Fantasy Football Scout",
         })
     return posts

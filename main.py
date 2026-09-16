@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import asdict
 from typing import Optional
 
@@ -77,18 +78,40 @@ async def rankings(
     }
 
 
+NEWS_SOURCES = [
+    ("r/FantasyPL", fpl_client.get_community_news),
+    ("Fantasy Football Scout", fpl_client.get_ffscout_news),
+]
+
+
 @app.get("/api/news")
 async def news(limit: int = 20):
-    """Community news & opinion — hot threads from r/FantasyPL. Best-effort:
-    if Reddit is unreachable or rate-limits us, return an empty list rather
-    than fail the whole request, since this is a bonus feature layered on
-    top of the core rankings/squad tools.
+    """Community news & opinion, pooled from multiple free sources (Reddit's
+    r/FantasyPL + Fantasy Football Scout's RSS feed). Best-effort per
+    source: if one is unreachable or rate-limits us, the other still comes
+    through rather than failing the whole request.
     """
-    try:
-        posts = await fpl_client.get_community_news(limit=limit)
-        return {"posts": posts, "source": "r/FantasyPL"}
-    except Exception:
-        return {"posts": [], "source": "r/FantasyPL", "error": "News feed unavailable right now."}
+    results = await asyncio.gather(
+        *(fetch(limit=limit) for _, fetch in NEWS_SOURCES),
+        return_exceptions=True,
+    )
+
+    posts, sources_ok, sources_failed = [], [], []
+    for (label, _), result in zip(NEWS_SOURCES, results):
+        if isinstance(result, Exception):
+            sources_failed.append(label)
+        else:
+            posts.extend(result)
+            sources_ok.append(label)
+
+    posts.sort(key=lambda p: p.get("created_utc") or 0, reverse=True)
+
+    return {
+        "posts": posts,
+        "sources": sources_ok,
+        "failed_sources": sources_failed,
+        "error": "No news sources available right now." if not sources_ok else None,
+    }
 
 
 @app.get("/api/squad/suggested")

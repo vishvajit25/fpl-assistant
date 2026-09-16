@@ -27,11 +27,20 @@
     --shadow: 0 8px 24px rgba(0,0,0,0.35);
   }
   * { box-sizing: border-box; }
-  html, body { background: var(--bg); }
+  html { background: #081008; }
   body {
     font-family: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
     max-width: 1180px; margin: 0 auto; padding: 20px 16px 60px;
     color: var(--text); -webkit-font-smoothing: antialiased;
+    /* Floodlit football ground: faint mown-grass stripes + corner vignette
+       under the app's dark base, subtle enough that cards stay readable. */
+    background:
+      repeating-linear-gradient(100deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 60px, transparent 60px, transparent 120px),
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(70,209,158,0.10), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 100% 0%, rgba(109,91,245,0.10), transparent 55%),
+      linear-gradient(180deg, #0b0d12 0%, #0a1410 45%, #0b0d12 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
   a { color: var(--accent-2); }
 
@@ -41,10 +50,8 @@
   }
   .brand { display: flex; align-items: center; gap: 12px; }
   .brand .logo {
-    width: 40px; height: 40px; border-radius: 10px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 1.1rem; box-shadow: var(--shadow);
+    width: 44px; height: 44px; display: block; flex-shrink: 0;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.45));
   }
   h1 { font-size: 1.35rem; margin: 0; letter-spacing: -0.02em; }
   .sub { color: var(--muted); font-size: 0.82rem; margin-top: 2px; }
@@ -183,6 +190,7 @@
   .news-title { font-size: 0.92rem; font-weight: 600; margin-bottom: 6px; }
   .news-meta { color: var(--muted); font-size: 0.76rem; display: flex; gap: 12px; flex-wrap: wrap; }
   .flair-badge { background: var(--accent); color: white; border-radius: 5px; padding: 1px 7px; font-size: 0.68rem; }
+  .source-badge { background: var(--card-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 7px; font-size: 0.68rem; color: var(--accent-2); font-weight: 600; }
 
   footer { margin-top: 40px; color: var(--muted); font-size: 0.76rem; text-align: center; border-top: 1px solid var(--border); padding-top: 16px; }
   footer a { color: var(--muted); }
@@ -198,7 +206,21 @@
 <body>
   <header class="hero">
     <div class="brand">
-      <div class="logo">⚽</div>
+      <svg class="logo" viewBox="0 0 64 64" role="img" aria-label="FPL Assistant crest">
+        <defs>
+          <clipPath id="crestClip"><circle cx="32" cy="32" r="29"/></clipPath>
+        </defs>
+        <circle cx="32" cy="32" r="30.5" fill="#eef0f5" opacity="0.9"/>
+        <g clip-path="url(#crestClip)">
+          <rect x="0" y="0" width="64" height="64" fill="#2be88a"/>
+          <polygon points="64,0 64,64 18,64" fill="#3d2fd6"/>
+        </g>
+        <circle cx="32" cy="32" r="29" fill="none" stroke="#0b0d12" stroke-width="1.5" opacity="0.25"/>
+        <circle cx="32" cy="32" r="11.5" fill="#0b0d12"/>
+        <polygon points="32,24.5 37,28.2 35.2,34.2 28.8,34.2 27,28.2" fill="#eef0f5"/>
+        <path d="M21.5 32 a10.5 10.5 0 0 1 6.5 -9.8" stroke="#eef0f5" stroke-width="1.6" fill="none" opacity="0.55" stroke-linecap="round"/>
+        <path d="M42.5 32 a10.5 10.5 0 0 0 -6.5 -9.8" stroke="#eef0f5" stroke-width="1.6" fill="none" opacity="0.55" stroke-linecap="round"/>
+      </svg>
       <div>
         <h1>FPL Assistant</h1>
         <div class="sub">Score = form + fixtures + underlying stats + value + availability, from the live FPL API.</div>
@@ -259,7 +281,7 @@
   <div id="news" class="panel">
     <div class="controls">
       <button class="action" onclick="loadNews()">Refresh</button>
-      <span class="muted">Live discussion from r/FantasyPL — free, no login needed.</span>
+      <span class="muted">Community &amp; editorial picks from r/FantasyPL and Fantasy Football Scout — free, no login needed.</span>
     </div>
     <div id="newsOut" class="loading"><span class="spinner"></span>Loading…</div>
   </div>
@@ -397,12 +419,17 @@ function pitchCard(p, extra) {
   </div>`;
 }
 
-function renderPitch(startingXi) {
+function badgeByIndex(p, i) {
+  return i === 0 ? '<span class="badge cap-badge">C</span>' : i === 1 ? '<span class="badge vc-badge">VC</span>' : "";
+}
+function badgeByFlags(p) {
+  return p.is_captain ? '<span class="badge cap-badge">C</span>' : p.is_vice_captain ? '<span class="badge vc-badge">VC</span>' : "";
+}
+
+function renderPitch(startingXi, badgeFn) {
+  badgeFn = badgeFn || badgeByIndex;
   const byPos = { GKP: [], DEF: [], MID: [], FWD: [] };
-  startingXi.forEach((p, i) => {
-    const badge = i === 0 ? '<span class="badge cap-badge">C</span>' : i === 1 ? '<span class="badge vc-badge">VC</span>' : "";
-    byPos[p.position].push(pitchCard(p, badge));
-  });
+  startingXi.forEach((p, i) => byPos[p.position].push(pitchCard(p, badgeFn(p, i))));
   return `<div class="pitch">
     <div class="pitch-row">${byPos.FWD.join("")}</div>
     <div class="pitch-row">${byPos.MID.join("")}</div>
@@ -459,12 +486,20 @@ async function loadMyTeam() {
     const suggestions = data.transfer_suggestions.length
       ? data.transfer_suggestions.map(s => `<div class="pill">OUT: ${esc(s.out.name)} (£${s.out.price}m, score ${s.out.score}) → IN: <b>${esc(s.in.name)}</b> (£${s.in.price}m, score ${s.in.score}) <span class="muted">+${s.score_gain} pts model score</span></div>`).join("")
       : '<div class="muted">No strong transfer suggestions right now — your weakest players don\'t have a clearly better, similarly priced replacement.</div>';
+    const starting = data.squad.filter(p => p.multiplier > 0);
+    const bench = data.squad.filter(p => p.multiplier === 0);
     out.innerHTML = `
       <div class="card">
         <div><b>${esc(data.team_name || "Your team")}</b> — ${esc(data.manager_name || "")}</div>
         <div class="muted">Overall rank: ${data.overall_rank ?? "n/a"} · Gameweek ${data.gameweek_used}</div>
       </div>
-      <div class="card"><h3>Your Squad (by model score)</h3><div class="table-scroll"><table>${tableHead()}${data.squad.map(p => playerRow(p, p.is_captain ? '<span class="badge cap-badge">C</span>' : p.is_vice_captain ? '<span class="badge vc-badge">VC</span>' : "")).join("")}${tableFoot()}</table></div></div>
+      <div class="card">
+        <h3>Your Formation</h3>
+        ${renderPitch(starting, badgeByFlags)}
+        <h3 style="margin-top:18px;">Bench</h3>
+        <div class="bench-strip">${bench.map(p => pitchCard(p)).join("")}</div>
+      </div>
+      <div class="card"><h3>Your Squad (by model score)</h3><div class="table-scroll"><table>${tableHead()}${data.squad.map(p => playerRow(p, badgeByFlags(p))).join("")}${tableFoot()}</table></div></div>
       <div class="card"><h3>Suggested Transfers</h3><div class="grid">${suggestions}</div></div>
     `;
   } catch (e) {
@@ -490,16 +525,20 @@ async function loadNews() {
     const data = await res.json();
     newsLoaded = true;
     if (!data.posts.length) {
-      out.innerHTML = `<div class="empty">${data.error || "No news available right now."} Check back soon.</div>`;
+      out.innerHTML = `<div class="empty">${esc(data.error || "No news available right now.")} Check back soon.</div>`;
       return;
     }
-    out.innerHTML = data.posts.map(p => `
+    const failedNote = (data.failed_sources && data.failed_sources.length)
+      ? `<div class="muted" style="margin-bottom:10px;">${esc(data.failed_sources.join(", "))} unavailable right now — showing what's reachable.</div>`
+      : "";
+    out.innerHTML = failedNote + data.posts.map(p => `
       <a class="news-item" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">
         <div class="news-title">${esc(p.title)}${p.flair ? ` <span class="flair-badge">${esc(p.flair)}</span>` : ""}</div>
         <div class="news-meta">
-          <span>u/${esc(p.author)}</span>
-          <span>▲ ${p.score}</span>
-          <span>💬 ${p.num_comments}</span>
+          <span class="source-badge">${esc(p.source || "")}</span>
+          <span>${esc(p.author || "")}</span>
+          ${p.score !== null && p.score !== undefined ? `<span>▲ ${p.score}</span>` : ""}
+          ${p.num_comments !== null && p.num_comments !== undefined ? `<span>💬 ${p.num_comments}</span>` : ""}
           <span>${timeAgo(p.created_utc)}</span>
         </div>
       </a>
@@ -513,7 +552,7 @@ loadRankings();
 </script>
 
 <footer>
-  Not affiliated with the Premier League or FPL — uses their public API. Community news via r/FantasyPL.
+  Not affiliated with the Premier League or FPL — uses their public API. Community news via r/FantasyPL and Fantasy Football Scout.
   <br /><a href="https://fantasy.premierleague.com" target="_blank" rel="noopener noreferrer">fantasy.premierleague.com</a>
 </footer>
 </body>
