@@ -9,7 +9,8 @@ value for money.
 
 All files live in one flat folder (no subfolders) so it's easy to upload
 manually to GitHub — `main.py`, `model.py`, `optimizer.py`, `fpl_client.py`,
-`chips.py` are the backend; `index.html` is the whole frontend.
+`chips.py`, `transfers.py` are the backend; `index.html` is the whole
+frontend.
 
 ```bash
 python3 -m venv .venv
@@ -32,10 +33,14 @@ Then open `index.html` in a browser (or serve it with
   budget, max 3 per club), rendered as a real pitch formation with a
   starting XI + captain/vice-captain, plus the bench.
 - **My Team** — paste your FPL team ID to see your squad as a pitch
-  formation + bench, transfer suggestions, your last 6 gameweeks' points
-  and rank trend, and rule-of-thumb **chip advice** (Wildcard, Free Hit,
-  Bench Boost, Triple Captain) based on your squad's availability and
-  upcoming fixtures.
+  formation + bench, your last 6 gameweeks' points and rank trend, and
+  rule-of-thumb **chip advice** (Wildcard, Free Hit, Bench Boost, Triple
+  Captain) based on your squad's availability and upcoming fixtures.
+  **Transfer suggestions** weigh each candidate's next 3 fixtures
+  explicitly — home or away, and FPL's own per-fixture difficulty rating,
+  with home games treated as slightly easier — alongside the model score,
+  so a bad run of away fixtures against tough opponents can surface a swap
+  even when the raw scores are close (see `transfers.py`).
 - **News & Opinion** — live posts pooled from r/FantasyPL and Fantasy
   Football Scout's RSS feed (both free, no API key), for injury chat,
   captaincy polls, and editorial opinion alongside the model's own numbers.

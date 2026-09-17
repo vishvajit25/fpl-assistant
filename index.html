@@ -280,6 +280,19 @@
   .chip-status.available { background: transparent; border: 1px solid var(--border); color: var(--muted); }
   .chip-status.used { background: transparent; border: 1px solid var(--border); color: var(--muted); opacity: 0.7; }
 
+  /* Transfer suggestions */
+  .transfer-card { background: var(--card-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
+  .transfer-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .transfer-side { flex: 1; min-width: 190px; }
+  .t-label { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+  .transfer-side.out .t-label { color: var(--bad); }
+  .transfer-side.in .t-label { color: var(--good); }
+  .t-name { font-weight: 700; margin-top: 2px; }
+  .t-meta { font-size: 0.78rem; color: var(--muted); margin-top: 1px; }
+  .t-fixtures { font-size: 0.7rem; color: var(--muted); margin-top: 5px; line-height: 1.5; }
+  .transfer-arrow { font-size: 1.2rem; color: var(--accent-2); font-weight: 700; flex-shrink: 0; }
+  .transfer-reason { margin-top: 10px; font-size: 0.78rem; color: var(--text); border-top: 1px solid var(--border); padding-top: 8px; }
+
   /* News tab */
   .news-item {
     display: block; background: var(--card); border: 1px solid var(--border); border-radius: 10px;
@@ -684,6 +697,27 @@ function renderChipAdvice(chipSuggestions) {
   }).join("");
 }
 
+function renderTransferCard(s) {
+  return `<div class="transfer-card">
+    <div class="transfer-row">
+      <div class="transfer-side out">
+        <div class="t-label">Out</div>
+        <div class="t-name">${esc(s.out.name)}</div>
+        <div class="t-meta">£${s.out.price}m · score ${s.out.score}</div>
+        <div class="t-fixtures">${esc(s.out.fixture_run.summary)}</div>
+      </div>
+      <div class="transfer-arrow">→</div>
+      <div class="transfer-side in">
+        <div class="t-label">In</div>
+        <div class="t-name">${esc(s.in.name)}</div>
+        <div class="t-meta">£${s.in.price}m · score ${s.in.score}</div>
+        <div class="t-fixtures">${esc(s.in.fixture_run.summary)}</div>
+      </div>
+    </div>
+    <div class="transfer-reason">${esc(s.reason)}</div>
+  </div>`;
+}
+
 async function loadMyTeam() {
   const out = document.getElementById("myteamOut");
   const teamId = document.getElementById("teamId").value;
@@ -694,8 +728,8 @@ async function loadMyTeam() {
     if (!res.ok) { const t = await res.json().catch(()=>({detail:res.statusText})); throw new Error(t.detail || res.statusText); }
     const data = await res.json();
     const suggestions = data.transfer_suggestions.length
-      ? data.transfer_suggestions.map(s => `<div class="pill">OUT: ${esc(s.out.name)} (£${s.out.price}m, score ${s.out.score}) → IN: <b>${esc(s.in.name)}</b> (£${s.in.price}m, score ${s.in.score}) <span class="muted">+${s.score_gain} pts model score</span></div>`).join("")
-      : '<div class="muted">No strong transfer suggestions right now — your weakest players don\'t have a clearly better, similarly priced replacement.</div>';
+      ? data.transfer_suggestions.map(renderTransferCard).join("")
+      : '<div class="muted">No strong transfer suggestions right now — your weakest players don\'t have a clearly better replacement once fixtures are weighed in too.</div>';
     const starting = data.squad.filter(p => p.multiplier > 0);
     const bench = data.squad.filter(p => p.multiplier === 0);
     out.innerHTML = `
@@ -712,7 +746,7 @@ async function loadMyTeam() {
       <div class="card"><h3>Recent Gameweek Performance</h3>${renderGwHistory(data.recent_gameweeks)}</div>
       <div class="card"><h3>Chip Advice</h3>${renderChipAdvice(data.chip_suggestions)}</div>
       <div class="card"><h3>Your Squad (by model score)</h3><div class="table-scroll"><table>${tableHead()}${data.squad.map(p => playerRow(p, badgeByFlags(p))).join("")}${tableFoot()}</table></div></div>
-      <div class="card"><h3>Suggested Transfers</h3><div class="grid">${suggestions}</div></div>
+      <div class="card"><h3>Suggested Transfers</h3><div class="muted" style="margin-bottom:10px;">Weighs each candidate's next 3 fixtures — home/away and FPL's difficulty rating — alongside the model score.</div>${suggestions}</div>
     `;
   } catch (e) {
     out.innerHTML = `<div class="err">Couldn't load your team: ${esc(e.message)}</div>`;

@@ -38,6 +38,7 @@ class PlayerScore:
     status: str  # a/d/i/s/u/n
     news: str
     next_fixtures: list[str]
+    next_fixtures_detail: list[dict]  # [{opponent, home, difficulty}, ...] for the transfer/chip advisors
     fixture_friendliness: float  # avg over next N fixtures, 0-10
     xg_involvement_per90: float
     overperformance: float  # actual goal involvements minus xG involvements (recent form riding luck vs due a regression)
@@ -149,7 +150,7 @@ def build_fixture_difficulty(fixtures: list, team_lookup: dict[int, str], upcomi
         else:
             avg_friendliness = 5.0
         labels = [f"{'vs' if f['home'] else '@'}{f['opponent']}({f['difficulty']})" for f in fx]
-        result[tid] = {"friendliness": avg_friendliness, "labels": labels}
+        result[tid] = {"friendliness": avg_friendliness, "labels": labels, "fixtures": fx}
     return result
 
 
@@ -194,7 +195,7 @@ def score_players(bootstrap: dict, fixtures: list, upcoming_gw_count: int = 3) -
         set_piece_tags, set_piece_bonus = _set_piece_duty(el)
         photo_url = f"{PLAYER_PHOTO_BASE}/p{el['code']}.png"
 
-        fx = fixture_info.get(team_id, {"friendliness": 5.0, "labels": []})
+        fx = fixture_info.get(team_id, {"friendliness": 5.0, "labels": [], "fixtures": []})
 
         xgc = float(el.get("expected_goals_conceded") or 0.0)
         xgc_per90 = xgc * per90_factor if per90_factor else 0.0
@@ -212,6 +213,7 @@ def score_players(bootstrap: dict, fixtures: list, upcoming_gw_count: int = 3) -
             "status": el.get("status") or "a",
             "news": el.get("news") or "",
             "next_fixtures": fx["labels"],
+            "next_fixtures_detail": fx["fixtures"],
             "fixture_friendliness": fx["friendliness"],
             "xg_involvement_per90": round(xgi_per90, 2),
             "overperformance": round(overperformance, 2),

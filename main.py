@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import chips
 import fpl_client
+import transfers
 from model import score_players
 from optimizer import build_squad
 
@@ -186,30 +187,10 @@ async def my_team(team_id: int):
     ]
     chip_suggestions = chips.suggest_chips(my_players, history.get("chips", []), _current_event(bootstrap))
 
-    # Transfer suggestions: for each of the manager's weakest players, find a
-    # same-position replacement (not already owned) with a notably higher
-    # score that fits within a reasonable price step-up.
-    owned_ids = {p["id"] for p in my_players}
-    already_suggested_ids: set = set()
-    suggestions = []
-    for owned in sorted(my_players, key=lambda p: p["score"])[:5]:
-        pool = [
-            p for p in all_scores.values()
-            if p.position == owned["position"]
-            and p.id not in owned_ids
-            and p.id not in already_suggested_ids
-            and p.price <= owned["price"] + 1.5
-            and p.score > owned["score"] + 8
-        ]
-        pool.sort(key=lambda p: p.score, reverse=True)
-        if pool:
-            best = pool[0]
-            already_suggested_ids.add(best.id)
-            suggestions.append({
-                "out": {"name": owned["name"], "score": owned["score"], "price": owned["price"]},
-                "in": {"name": best.name, "score": best.score, "price": best.price},
-                "score_gain": round(best.score - owned["score"], 1),
-            })
+    # Transfer suggestions: for the manager's weakest players, weigh both the
+    # model score and each candidate's next-3-fixture run (home/away-aware
+    # FDR) rather than score alone — see transfers.py.
+    suggestions = transfers.suggest_transfers(my_players, all_scores)
 
     return {
         "team_name": entry.get("name"),
